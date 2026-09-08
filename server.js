@@ -3,7 +3,8 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { getPassphrase } from './src/passphrase.js';
 import { createApiRouter } from './src/routes.js';
-import { inspect, unlock } from './src/storage.js';
+import { DEMO_HOLDINGS } from './src/demo.js';
+import { enableDemo, inspect, unlock } from './src/storage.js';
 
 const ROOT = path.dirname(fileURLToPath(import.meta.url));
 const PORT = Number(process.env.PORT ?? 3000);
@@ -33,8 +34,18 @@ async function unlockStorage() {
   }
 }
 
+// Flag for `npm run demo` (portable across shells); env var for hosting platforms.
+const DEMO = process.env.DEMO === '1' || process.argv.includes('--demo');
+
 try {
-  await unlockStorage();
+  if (DEMO) {
+    // No passphrase, no file, no writes — safe to expose publicly.
+    enableDemo(DEMO_HOLDINGS);
+    console.log(`Read-only demo mode: ${DEMO_HOLDINGS.length} sample holdings, live prices,`);
+    console.log('nothing read from or written to disk.');
+  } else {
+    await unlockStorage();
+  }
 } catch (err) {
   console.error(`\n${err.message}`);
   process.exit(1);

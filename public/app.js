@@ -14,6 +14,8 @@ const el = {
   addBtn: document.getElementById('add-btn'),
   formError: document.getElementById('form-error'),
   sortableHeaders: [...document.querySelectorAll('th.sortable')],
+  demoNotice: document.getElementById('demo-notice'),
+  addCard: document.getElementById('add-card'),
 };
 
 let selected = null; // {coinId, symbol, name}
@@ -113,6 +115,10 @@ function render(data) {
   latest = data;
   const rows = sortedRows(data.rows);
   const { totals } = data;
+  const demo = Boolean(data.demo);
+
+  el.demoNotice.hidden = !demo;
+  el.addCard.hidden = demo;
 
   el.body.replaceChildren();
 
@@ -135,18 +141,20 @@ function render(data) {
 
       const amountCell = tr.insertCell();
       amountCell.className = 'num';
-      amountCell.append(createCellEditor(row, 'amount'));
+      if (demo) amountCell.textContent = assetSize(row.amount);
+      else amountCell.append(createCellEditor(row, 'amount'));
 
       cell(tr, row.subtotalUsd === null ? '—' : fiat(row.subtotalUsd, 'USD'), 'num');
       cell(tr, row.subtotalSgd === null ? '—' : fiat(row.subtotalSgd, 'SGD'), 'num');
 
       const remarkCell = tr.insertCell();
       remarkCell.className = 'col-remark';
-      remarkCell.append(createCellEditor(row, 'remark'));
+      if (demo) remarkCell.textContent = row.remark;
+      else remarkCell.append(createCellEditor(row, 'remark'));
 
       const actions = tr.insertCell();
       actions.className = 'col-actions';
-      actions.append(createRemoveButton(row));
+      if (!demo) actions.append(createRemoveButton(row));
     }
   }
 

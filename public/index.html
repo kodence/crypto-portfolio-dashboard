@@ -14,6 +14,11 @@
         <p class="subtitle">Live USD prices from CoinGecko, valued in USD and SGD.</p>
       </header>
 
+      <div id="demo-notice" class="demo-notice" hidden>
+        <strong>Read-only demo.</strong> Sample holdings with live prices — adding, editing, and
+        removing are disabled.
+      </div>
+
       <div class="toolbar">
         <button id="refresh-btn" class="btn btn-primary" type="button" aria-label="Refresh prices">
           <span class="btn-label">Refresh prices</span>
@@ -63,7 +68,7 @@
         </table>
       </div>
 
-      <section class="card add-card">
+      <section class="card add-card" id="add-card">
         <h2>Add a holding</h2>
         <form id="add-form" autocomplete="off">
           <div class="field">

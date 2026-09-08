@@ -29,9 +29,9 @@ export it in the shell before `npm start`).
 
 ## Usage
 
-> **No hosted demo.** The app has no authentication and keeps a single portfolio file, so a public
-> instance would let every visitor read and edit the same holdings. The screenshots above show it
-> with demo data; running it locally takes about a minute.
+> **Want to try it without entering your own holdings?** `npm run demo` starts a read-only demo:
+> six sample positions, real live prices, no passphrase, nothing written to disk. See
+> [Read-only demo mode](#read-only-demo-mode).
 
 ### First run
 
@@ -79,6 +79,27 @@ refresh costs a single API call no matter how many you own.
 `data/portfolio.json` is encrypted, so it is safe to copy into a backup, a synced folder, or a USB
 stick. To move to another machine, copy the file across, install the project there, and start it
 with the same passphrase. Nothing else is needed — the salt travels inside the file.
+
+### Read-only demo mode
+
+```bash
+npm run demo
+```
+
+Serves six sample holdings from memory with real prices from CoinGecko. It never reads or writes
+`data/portfolio.json`, asks for no passphrase, and refuses every write with `403`:
+
+```
+This is a read-only demo — adding, editing, and removing are disabled.
+```
+
+The add form is hidden and the edit and remove controls are gone; refreshing prices and sorting
+still work. A banner at the top says the instance is a demo.
+
+Because it holds no real data and accepts no writes, **this is the only configuration that is safe
+to expose publicly.** Hosting platforms that set environment variables rather than arguments can
+use `DEMO=1` instead of the flag. The normal app has no authentication — anyone who reaches the
+port sees the decrypted portfolio — so keep that one on localhost.
 
 ### If something goes wrong
 
@@ -130,6 +151,7 @@ reads `.env`.
 | --- | --- |
 | `npm start` | Run the server on port 3000 (override with `PORT`). |
 | `npm run dev` | Same, with `node --watch` restarts on file changes. |
+| `npm run demo` | Read-only demo: sample holdings, live prices, no passphrase, writes refused. |
 | `npm test` | Unit tests for the valuation logic (`node --test`). |
 
 ## Layout
@@ -139,6 +161,7 @@ server.js              express wiring
 src/storage.js         data/portfolio.json read/write (encrypted, atomic, serialized)
 src/crypto.js          AES-256-GCM envelope + scrypt key derivation
 src/passphrase.js      hidden startup prompt
+src/demo.js            sample holdings for read-only demo mode
 src/coingecko.js       the only file that talks to CoinGecko
 src/portfolio.js       pure valuation: rows + totals
 src/routes.js          REST API
@@ -155,6 +178,9 @@ data/portfolio.json    your holdings, encrypted (git-ignored, created on first r
 | `POST` | `/api/holdings` | `{name, symbol, coinId, amount}` |
 | `PATCH` | `/api/holdings/:id` | `{amount}` and/or `{remark}` — change an asset size or note. |
 | `DELETE` | `/api/holdings/:id` | Remove one holding. |
+
+In demo mode every non-`GET` request returns `403` before it reaches a handler, and
+`GET /api/portfolio` carries `"demo": true` so the page can render itself read-only.
 
 ## Notes
 

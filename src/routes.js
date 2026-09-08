@@ -1,13 +1,23 @@
 import { Router } from 'express';
 import { fetchPrices, searchCoins, PriceSourceError } from './coingecko.js';
 import { buildRows } from './portfolio.js';
-import { addHolding, getHoldings, removeHolding, updateHolding } from './storage.js';
+import { addHolding, getHoldings, isDemo, removeHolding, updateHolding } from './storage.js';
 
 // Long enough for a real note, short enough to keep the column sane.
 const REMARK_MAX_LENGTH = 200;
 
 export function createApiRouter() {
   const router = Router();
+
+  // Read-only demo: refuse anything that would change data before it reaches a handler.
+  router.use((req, res, next) => {
+    if (isDemo() && req.method !== 'GET') {
+      return res.status(403).json({
+        error: 'This is a read-only demo — adding, editing, and removing are disabled.',
+      });
+    }
+    next();
+  });
 
   // Holdings + live prices + computed totals. Used on page load and on Refresh.
   router.get('/portfolio', async (req, res, next) => {
@@ -25,7 +35,13 @@ export function createApiRouter() {
       }
 
       const { rows, totals } = buildRows(holdings, prices);
-      res.json({ rows, totals, priceError, fetchedAt: new Date().toISOString() });
+      res.json({
+        rows,
+        totals,
+        priceError,
+        demo: isDemo(),
+        fetchedAt: new Date().toISOString(),
+      });
     } catch (err) {
       next(err);
     }

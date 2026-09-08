@@ -22,6 +22,9 @@ const emptyState = () => ({ holdings: [] });
 let key = null;
 let salt = null;
 
+// Set by enableDemo(); when present nothing is read from or written to disk at all.
+let demoState = null;
+
 // All mutations run through this chain so two concurrent requests can never
 // read-modify-write on top of each other.
 let queue = Promise.resolve();
@@ -91,7 +94,19 @@ export async function unlock(passphrase) {
   return { mode: 'created', holdings: 0 };
 }
 
+/**
+ * Serves fixed sample holdings from memory instead of the portfolio file.
+ * There is no key, no file, and every write is refused — see writeState().
+ */
+export function enableDemo(holdings) {
+  demoState = { holdings: structuredClone(holdings) };
+}
+
+export const isDemo = () => demoState !== null;
+
 async function readState() {
+  if (demoState) return structuredClone(demoState);
+
   const raw = await readFileOrNull();
   if (raw === null) return emptyState();
   if (!key) throw new Error('Storage is locked — unlock() must run before reading.');
@@ -102,6 +117,7 @@ async function readState() {
 }
 
 async function writeState(state) {
+  if (demoState) throw new Error('Read-only demo: nothing is saved.');
   if (!key || !salt) throw new Error('Storage is locked — unlock() must run before writing.');
 
   await fs.mkdir(DATA_DIR, { recursive: true });

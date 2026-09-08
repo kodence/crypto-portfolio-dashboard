@@ -129,6 +129,15 @@ body {
   font-size: 14px;
 }
 
+.demo-notice {
+  margin: 20px 0 -4px;
+  padding: 10px 14px;
+  border-radius: var(--radius);
+  border: 1px solid var(--accent);
+  background: color-mix(in srgb, var(--accent) 10%, transparent);
+  font-size: 14px;
+}
+
 .table-wrap {
   overflow-x: auto;
   background: var(--surface);
