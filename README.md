@@ -27,30 +27,67 @@ No API key is required — the dashboard uses CoinGecko's public free tier. If y
 and want the higher rate limit, copy `.env.example` to `.env` and set `COINGECKO_API_KEY` (or just
 export it in the shell before `npm start`).
 
-## What it does
+## Usage
 
-- **Add a holding** — search by symbol or name, pick the exact coin from the results, give it your
-  own label and the asset size.
-- **Edit an asset size** — click the number in the Asset Size column and type a new one. Enter or
-  clicking away saves; Escape abandons the edit. Prices and totals recompute immediately.
-- **Add a remark** — free text per holding in the last column, edited the same way (click, type,
-  Enter to save, Escape to cancel). Up to 200 characters; save an empty one to clear it.
-- **Remove a holding** — click `×` on the row, then click `Remove?` to confirm (the confirm resets
-  itself after 4 seconds).
-- **Refresh prices** — the button above the table; the timestamp beside it shows the last successful
-  fetch. Prices are also fetched once on page load. Nothing polls in the background.
-- **Table columns** — `#`, Name, Symbol, Price (USD), Asset Size, Sub Total (USD), Sub Total (SGD),
-  Remark, with a totals row at the bottom.
-- **Sort by value** — click either sub-total header: largest first, then smallest first, then back
-  to the order you added them. The `#` column keeps each holding's original item number, so a
-  sorted table shows at a glance where each position ranks. Sorting is client-side and survives a
-  price refresh; holdings with no price sort to the bottom either way.
+> **No hosted demo.** The app has no authentication and keeps a single portfolio file, so a public
+> instance would let every visitor read and edit the same holdings. The screenshots above show it
+> with demo data; running it locally takes about a minute.
 
-### Why you pick the coin from a list
+### First run
 
-CoinGecko is keyed by *coin id* (`bitcoin`), not by ticker, and tickers are not unique — searching
-`SOLANA` returns a memecoin, not Solana. The picker stores the canonical coin id alongside the
-symbol so the price always resolves to the asset you actually meant.
+`npm start` asks you to choose a passphrase, twice. Everything you enter afterwards is encrypted
+under it, and **there is no recovery** — put it in a password manager before you go further. Later
+launches ask once and print `Unlocked N holdings.`
+
+### Adding a holding
+
+1. Type a symbol or name into **Coin** — the search runs after a short pause.
+2. **Pick the exact coin from the list.** Tickers are not unique on CoinGecko: searching `SOLANA`
+   returns a memecoin, not Solana. The picker is ranked by market cap and stores the canonical coin
+   id, so prices always resolve to the asset you meant.
+3. Give it **your label** (`Cold wallet`, `Staking`) — this is yours to name, and defaults to the
+   coin name.
+4. Enter the **asset size** and click **Add holding**.
+
+### Editing
+
+- **Asset size** — click the number, type a new one. Enter or clicking away saves; Escape abandons
+  the edit. Sub-totals and the totals row recompute immediately.
+- **Remark** — the last column, edited the same way. Up to 200 characters; save an empty one to
+  clear it. Handy for recording which wallet or exchange holds the position.
+- **Remove** — click `×` on the row, then `Remove?` to confirm. The confirmation resets itself
+  after 4 seconds if you change your mind.
+
+### Reading the table
+
+Columns are `#`, Name, Symbol, Price (USD), Asset Size, Sub Total (USD), Sub Total (SGD), Remark,
+with totals at the bottom. SGD figures come from CoinGecko's own SGD quote rather than a converted
+USD figure, so there is no second rounding step.
+
+Click either sub-total header to sort: largest first, then smallest first, then back to the order
+you added them. The `#` column keeps each holding's original number, so a sorted table shows at a
+glance where each position ranks. Sorting happens in the browser and survives a price refresh.
+
+### Refreshing prices
+
+Prices load once when the page opens, and after that only when you click **Refresh prices**. The
+timestamp beside the button is the last successful fetch. One request covers every holding, so a
+refresh costs a single API call no matter how many you own.
+
+### Backing up and moving machines
+
+`data/portfolio.json` is encrypted, so it is safe to copy into a backup, a synced folder, or a USB
+stick. To move to another machine, copy the file across, install the project there, and start it
+with the same passphrase. Nothing else is needed — the salt travels inside the file.
+
+### If something goes wrong
+
+| Symptom | Cause |
+| --- | --- |
+| `Wrong passphrase, or the file has been altered.` | Mistyped passphrase, or the file was edited. The server stops rather than risk overwriting good data. |
+| No `Passphrase:` prompt appears | Started without a real terminal (IDE run button, task runner, piped stdin). Run it from a terminal. |
+| `CoinGecko rate limit hit.` | Too many refreshes on the free tier. Wait a minute, or set a `COINGECKO_API_KEY`. |
+| Prices show `—` and a banner appears | CoinGecko is unreachable. Your holdings still display; only the prices are missing. |
 
 ## Encryption
 
@@ -121,9 +158,6 @@ data/portfolio.json    your holdings, encrypted (git-ignored, created on first r
 
 ## Notes
 
-- **Price outages don't blank the table.** If CoinGecko is unreachable or rate-limits you (HTTP
-  429), the table still lists your holdings with `—` prices and a banner explains why. One batched
-  request covers all holdings, so a refresh costs a single API call.
 - **Amounts are JavaScript numbers** (float64). That is fine for a display dashboard; if this ever
   becomes an accounting tool, amounts should move to a decimal type.
 - **No auth.** It binds to localhost and anyone who can reach the port sees the decrypted
