@@ -1,0 +1,476 @@
+:root {
+  color-scheme: light dark;
+  --bg: #f6f7f9;
+  --surface: #ffffff;
+  --border: #e3e6ea;
+  --text: #16191d;
+  --muted: #6b7280;
+  --accent: #2f6df6;
+  --accent-text: #ffffff;
+  --danger: #c23b34;
+  --warn-bg: #fdf3d8;
+  --warn-border: #e9cf8a;
+  --warn-text: #6b4e10;
+  --pos: #17795e;
+  --radius: 10px;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #14161a;
+    --surface: #1b1e24;
+    --border: #2b3038;
+    --text: #e8eaed;
+    --muted: #9aa3b0;
+    --accent: #5b8cff;
+    --accent-text: #0b1020;
+    --danger: #f0736b;
+    --warn-bg: #3a3116;
+    --warn-border: #6b5a24;
+    --warn-text: #f2dda1;
+    --pos: #4ecfa5;
+  }
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font: 15px/1.5 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+}
+
+.page {
+  max-width: 1080px;
+  margin: 0 auto;
+  padding: 32px 20px 64px;
+}
+
+.page-header h1 {
+  margin: 0;
+  font-size: 26px;
+  letter-spacing: -0.01em;
+}
+
+.subtitle {
+  margin: 4px 0 0;
+  color: var(--muted);
+  font-size: 14px;
+}
+
+.toolbar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 24px 0 12px;
+}
+
+.last-updated {
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.btn {
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--text);
+  border-radius: var(--radius);
+  padding: 9px 16px;
+  font: inherit;
+  font-weight: 500;
+  cursor: pointer;
+  transition: opacity 0.15s ease, background 0.15s ease;
+}
+
+.btn:hover:not(:disabled) {
+  border-color: var(--accent);
+}
+
+.btn:disabled {
+  opacity: 0.55;
+  cursor: default;
+}
+
+.btn-primary {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: var(--accent-text);
+}
+
+.btn.is-busy .btn-label::after {
+  content: "";
+  display: inline-block;
+  width: 0.85em;
+  height: 0.85em;
+  margin-left: 8px;
+  vertical-align: -0.1em;
+  border: 2px solid currentColor;
+  border-right-color: transparent;
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.banner {
+  margin: 0 0 12px;
+  padding: 10px 14px;
+  border-radius: var(--radius);
+  background: var(--warn-bg);
+  border: 1px solid var(--warn-border);
+  color: var(--warn-text);
+  font-size: 14px;
+}
+
+.table-wrap {
+  overflow-x: auto;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+}
+
+table.holdings {
+  width: 100%;
+  border-collapse: collapse;
+  font-variant-numeric: tabular-nums;
+}
+
+.holdings th,
+.holdings td {
+  padding: 11px 14px;
+  text-align: left;
+  border-bottom: 1px solid var(--border);
+  white-space: nowrap;
+}
+
+.holdings thead th {
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--muted);
+  font-weight: 600;
+}
+
+.holdings .num {
+  text-align: right;
+}
+
+.holdings .col-num {
+  width: 48px;
+  color: var(--muted);
+}
+
+.holdings .col-actions {
+  width: 92px;
+  text-align: right;
+}
+
+.holdings tbody tr:hover {
+  background: color-mix(in srgb, var(--accent) 6%, transparent);
+}
+
+.holdings tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.symbol {
+  font-weight: 600;
+  letter-spacing: 0.02em;
+}
+
+.coin-id {
+  display: block;
+  font-size: 11px;
+  color: var(--muted);
+  font-weight: 400;
+  letter-spacing: 0;
+}
+
+.stale {
+  color: var(--muted);
+}
+
+.holdings th.sortable {
+  padding: 0;
+}
+
+.holdings th.sortable .sort-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 6px;
+  width: 100%;
+  padding: 11px 14px;
+  border: none;
+  background: none;
+  font: inherit;
+  color: inherit;
+  letter-spacing: inherit;
+  text-transform: inherit;
+  cursor: pointer;
+}
+
+.holdings th.sortable .sort-btn:hover {
+  color: var(--text);
+}
+
+.holdings th.sorted .sort-btn {
+  color: var(--accent);
+}
+
+/* Fixed width so the header does not shift when the arrow appears. */
+.sort-arrow {
+  display: inline-block;
+  width: 10px;
+  font-size: 9px;
+}
+
+.holdings tfoot td {
+  border-top: 2px solid var(--border);
+  border-bottom: none;
+  font-weight: 600;
+  background: color-mix(in srgb, var(--accent) 4%, transparent);
+}
+
+.total-label {
+  text-align: right !important;
+  color: var(--muted);
+  text-transform: uppercase;
+  font-size: 12px;
+  letter-spacing: 0.04em;
+}
+
+.total {
+  font-size: 15px;
+  color: var(--pos);
+}
+
+.empty-row td {
+  text-align: center;
+  color: var(--muted);
+  padding: 28px 14px;
+}
+
+.amount-btn {
+  border: none;
+  background: none;
+  color: inherit;
+  font: inherit;
+  font-variant-numeric: tabular-nums;
+  padding: 3px 6px;
+  margin: -3px -6px;
+  border-radius: 6px;
+  cursor: text;
+  border-bottom: 1px dashed transparent;
+}
+
+.amount-btn:hover,
+.amount-btn:focus-visible {
+  background: color-mix(in srgb, var(--accent) 10%, transparent);
+  border-bottom-color: var(--accent);
+}
+
+.amount-input {
+  width: 130px;
+  padding: 3px 6px;
+  margin: -3px -6px;
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+  border-radius: 6px;
+}
+
+.amount-input:disabled {
+  opacity: 0.6;
+}
+
+.holdings .col-remark {
+  white-space: normal;
+  min-width: 150px;
+  max-width: 240px;
+}
+
+.remark-btn {
+  display: block;
+  width: 100%;
+  border: none;
+  background: none;
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  padding: 3px 6px;
+  margin: -3px -6px;
+  border-radius: 6px;
+  cursor: text;
+  border-bottom: 1px dashed transparent;
+}
+
+.remark-btn:hover,
+.remark-btn:focus-visible {
+  background: color-mix(in srgb, var(--accent) 10%, transparent);
+  border-bottom-color: var(--accent);
+}
+
+/* An empty remark still needs a click target, so show a muted prompt. */
+.remark-btn.is-empty {
+  color: var(--muted);
+  font-style: italic;
+}
+
+.remark-input {
+  width: 100%;
+  min-width: 140px;
+  padding: 3px 6px;
+  margin: -3px -6px;
+  border-radius: 6px;
+}
+
+.remark-input:disabled {
+  opacity: 0.6;
+}
+
+.remove-btn {
+  border: none;
+  background: none;
+  color: var(--muted);
+  font-size: 18px;
+  line-height: 1;
+  cursor: pointer;
+  padding: 2px 6px;
+  border-radius: 6px;
+}
+
+.remove-btn:hover {
+  color: var(--danger);
+  background: color-mix(in srgb, var(--danger) 12%, transparent);
+}
+
+.remove-btn.armed {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--danger);
+  background: color-mix(in srgb, var(--danger) 14%, transparent);
+  padding: 4px 8px;
+}
+
+.card {
+  margin-top: 28px;
+  padding: 20px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+}
+
+.card h2 {
+  margin: 0 0 16px;
+  font-size: 16px;
+}
+
+.field {
+  position: relative;
+  margin-bottom: 14px;
+  flex: 1;
+}
+
+.field-row {
+  display: flex;
+  gap: 14px;
+  flex-wrap: wrap;
+}
+
+label {
+  display: block;
+  font-size: 13px;
+  font-weight: 500;
+  margin-bottom: 5px;
+}
+
+input {
+  width: 100%;
+  padding: 9px 12px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--bg);
+  color: var(--text);
+  font: inherit;
+}
+
+input:focus {
+  outline: 2px solid var(--accent);
+  outline-offset: -1px;
+}
+
+.hint {
+  margin: 5px 0 0;
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.search-results {
+  list-style: none;
+  margin: 6px 0 0;
+  padding: 4px;
+  max-height: 240px;
+  overflow-y: auto;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--surface);
+}
+
+.search-results li button {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  border: none;
+  background: none;
+  color: var(--text);
+  font: inherit;
+  text-align: left;
+  padding: 7px 10px;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.search-results li button:hover {
+  background: color-mix(in srgb, var(--accent) 12%, transparent);
+}
+
+.search-results img {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+}
+
+.result-rank {
+  margin-left: auto;
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.selected-coin {
+  margin: 8px 0 0;
+  font-size: 13px;
+  color: var(--pos);
+}
+
+.form-error {
+  margin: 10px 0 0;
+  color: var(--danger);
+  font-size: 13px;
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}

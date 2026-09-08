@@ -1,0 +1,110 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Crypto Portfolio</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>&#128176;</text></svg>" />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <main class="page">
+      <header class="page-header">
+        <h1>Crypto Portfolio</h1>
+        <p class="subtitle">Live USD prices from CoinGecko, valued in USD and SGD.</p>
+      </header>
+
+      <div class="toolbar">
+        <button id="refresh-btn" class="btn btn-primary" type="button" aria-label="Refresh prices">
+          <span class="btn-label">Refresh prices</span>
+        </button>
+        <span id="last-updated" class="last-updated">Loading&hellip;</span>
+      </div>
+
+      <div id="banner" class="banner" hidden></div>
+
+      <div class="table-wrap">
+        <table class="holdings">
+          <thead>
+            <tr>
+              <th class="col-num">#</th>
+              <th>Name</th>
+              <th>Symbol</th>
+              <th class="num">Price (USD)</th>
+              <th class="num">Asset Size</th>
+              <th class="num sortable" data-sort-key="subtotalUsd" aria-sort="none">
+                <button type="button" class="sort-btn">
+                  Sub Total (USD)<span class="sort-arrow" aria-hidden="true"></span>
+                </button>
+              </th>
+              <th class="num sortable" data-sort-key="subtotalSgd" aria-sort="none">
+                <button type="button" class="sort-btn">
+                  Sub Total (SGD)<span class="sort-arrow" aria-hidden="true"></span>
+                </button>
+              </th>
+              <th class="col-remark">Remark</th>
+              <th class="col-actions"><span class="sr-only">Actions</span></th>
+            </tr>
+          </thead>
+          <tbody id="holdings-body">
+            <tr class="empty-row">
+              <td colspan="9">Loading portfolio&hellip;</td>
+            </tr>
+          </tbody>
+          <tfoot>
+            <tr>
+              <td colspan="5" class="total-label">Total</td>
+              <td class="num total" id="total-usd">&mdash;</td>
+              <td class="num total" id="total-sgd">&mdash;</td>
+              <td></td>
+              <td></td>
+            </tr>
+          </tfoot>
+        </table>
+      </div>
+
+      <section class="card add-card">
+        <h2>Add a holding</h2>
+        <form id="add-form" autocomplete="off">
+          <div class="field">
+            <label for="search-input">Coin</label>
+            <input
+              id="search-input"
+              type="text"
+              placeholder="Search by symbol or name, e.g. BTC"
+              aria-describedby="search-hint"
+            />
+            <p id="search-hint" class="hint">
+              Symbols are not unique &mdash; pick the exact coin so prices resolve correctly.
+            </p>
+            <ul id="search-results" class="search-results" hidden></ul>
+            <p id="selected-coin" class="selected-coin" hidden></p>
+          </div>
+
+          <div class="field-row">
+            <div class="field">
+              <label for="name-input">Your label</label>
+              <input id="name-input" type="text" placeholder="e.g. Cold wallet" required />
+            </div>
+            <div class="field">
+              <label for="amount-input">Asset size</label>
+              <input
+                id="amount-input"
+                type="number"
+                step="any"
+                min="0"
+                placeholder="0.00"
+                required
+              />
+            </div>
+          </div>
+
+          <button id="add-btn" class="btn btn-primary" type="submit" disabled>Add holding</button>
+          <p id="form-error" class="form-error" hidden></p>
+        </form>
+      </section>
+    </main>
+
+    <script src="app.js" type="module"></script>
+  </body>
+</html>
