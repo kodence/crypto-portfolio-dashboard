@@ -3,6 +3,10 @@
 A local, single-user dashboard for tracking crypto holdings. Prices come from CoinGecko and every
 position is valued in both USD and SGD. Prices refresh only when you ask them to.
 
+![The dashboard: a table of holdings with USD and SGD sub-totals and a totals row](docs/screenshot.png)
+
+<sub>Demo data, not a real portfolio.</sub>
+
 ## Quick start
 
 ```bash
